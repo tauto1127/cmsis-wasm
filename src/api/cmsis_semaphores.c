@@ -1,6 +1,6 @@
 #include "cmsis_semaphores_private.h"
-#include "cmsis_posix_os_thread_sync.h"
-#include "cmsis_posix_os_memory.h"
+#include "cmsis_wasm_thread_sync.h"
+#include "cmsis_wasm_memory.h"
 
 osSemaphoreId_t osSemaphoreNew(uint32_t max_count, uint32_t initial_count, const osSemaphoreAttr_t* attr)
 {
@@ -19,7 +19,7 @@ osSemaphoreId_t osSemaphoreNew(uint32_t max_count, uint32_t initial_count, const
   }
   semp->count = initial_count;
   semp->max_count = max_count;
-  semp->magicno = POSIX_OSSEM_HEAD_MAGICNO;
+  semp->magicno = WASM_SEM_HEAD_MAGICNO;
   PosixOsQueueHeadInit(&semp->waiting);
   return (osSemaphoreId_t)semp;
 }
@@ -36,7 +36,7 @@ osStatus_t osSemaphoreAcquire(osSemaphoreId_t semaphore_id, uint32_t timeout)
   }
   semp = (CmsisSemType*)semaphore_id;
   PosixOsThreadSyncLock();
-  if (semp->magicno != POSIX_OSSEM_HEAD_MAGICNO) {
+  if (semp->magicno != WASM_SEM_HEAD_MAGICNO) {
     PosixOsThreadSyncUnlock();
     return osErrorParameter;
   }
@@ -61,7 +61,7 @@ osStatus_t osSemaphoreRelease(osSemaphoreId_t semaphore_id)
   }
   semp = (CmsisSemType*)semaphore_id;
   PosixOsThreadSyncLock();
-  if (semp->magicno != POSIX_OSSEM_HEAD_MAGICNO) {
+  if (semp->magicno != WASM_SEM_HEAD_MAGICNO) {
     PosixOsThreadSyncUnlock();
     return osErrorParameter;
   }
@@ -82,7 +82,7 @@ osStatus_t osSemaphoreDelete(osSemaphoreId_t semaphore_id)
   }
   semp = (CmsisSemType*)semaphore_id;
   PosixOsThreadSyncLock();
-  if (semp->magicno != POSIX_OSSEM_HEAD_MAGICNO) {
+  if (semp->magicno != WASM_SEM_HEAD_MAGICNO) {
     PosixOsThreadSyncUnlock();
     CMSIS_IMPL_ERROR("ERROR:%s %s() %d invalid magicno(0x%x)\n", __FILE__, __FUNCTION__, __LINE__, semp->magicno);
     return osErrorParameter;
@@ -109,7 +109,7 @@ osStatus_t osSemaphoreAcquire_nolock(CmsisSemType* semp, uint32_t timeout)
       err = osErrorResource;
     } else {
       if (timeout == osWaitForever) {
-        timeout = POSIX_OS_THREAD_SYNC_WAIT_FOREVER;
+        timeout = WASM_THREAD_SYNC_WAIT_FOREVER;
       }
       (void)PosixOsThreadSyncWait(&semp->waiting, timeout, &ercd);
       if (ercd != osOK) {
@@ -160,7 +160,7 @@ int32_t osSemaphoreWait(osSemaphoreId semaphore_id, uint32_t millisec)
   }
   semp = (CmsisSemType*)semaphore_id;
   PosixOsThreadSyncLock();
-  if (semp->magicno != POSIX_OSSEM_HEAD_MAGICNO) {
+  if (semp->magicno != WASM_SEM_HEAD_MAGICNO) {
     PosixOsThreadSyncUnlock();
     return -1;
   }

@@ -1,5 +1,5 @@
-#include "cmsis_posix_os_message_queue.h"
-#include "cmsis_posix_os_thread_sync.h"
+#include "cmsis_wasm_message_queue.h"
+#include "cmsis_wasm_thread_sync.h"
 
 osMessageQueueId_t osMessageQueueNew(
   uint32_t 	msg_count,
@@ -79,7 +79,7 @@ osStatus_t osMessageQueueGet(
     err = osErrorResource;
   } else {
     if (timeout == osWaitForever) {
-      arg_timeout = POSIX_OS_THREAD_SYNC_WAIT_FOREVER;
+      arg_timeout = WASM_THREAD_SYNC_WAIT_FOREVER;
     }
     err = osErrorTimeout;
   }
@@ -139,7 +139,7 @@ osStatus_t osMessageQueuePut(
     err = osErrorResource;
   } else {
     if (timeout == osWaitForever) {
-      arg_timeout = POSIX_OS_THREAD_SYNC_WAIT_FOREVER;
+      arg_timeout = WASM_THREAD_SYNC_WAIT_FOREVER;
     }
     err = osErrorTimeout;
   }

@@ -1,7 +1,7 @@
-#ifndef _CMSIS_POSIX_OS_QUEUE_H_
-#define _CMSIS_POSIX_OS_QUEUE_H_
+#ifndef _CMSIS_WASM_QUEUE_H_
+#define _CMSIS_WASM_QUEUE_H_
 
-#include "cmsis_posix_os_common.h"
+#include "cmsis_wasm_common.h"
 
 typedef struct {
   uint16_t	count;
@@ -20,4 +20,4 @@ extern void PosixOsQueueHeadAddTail(PosixOsQueueHeadType *headp, CMSIS_IMPL_QUEU
 extern CMSIS_IMPL_QUEUE* PosixOsQueueHeadRemoveFirst(PosixOsQueueHeadType *headp);
 extern void PosixOsQueueHeadRemoveEntry(PosixOsQueueHeadType *headp, CMSIS_IMPL_QUEUE *entry);
 
-#endif /* _CMSIS_POSIX_OS_QUEUE_H_ */
+#endif /* _CMSIS_WASM_QUEUE_H_ */

@@ -1,4 +1,4 @@
-#include "cmsis_posix_os_queue.h"
+#include "cmsis_wasm_queue.h"
 
 void PosixOsQueueHeadAddTail(PosixOsQueueHeadType* headp, CMSIS_IMPL_QUEUE* entry)
 {

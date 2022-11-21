@@ -1,5 +1,5 @@
-#include "cmsis_posix_os_thread_sync.h"
-#include "cmsis_posix_os_time.h"
+#include "cmsis_wasm_thread_sync.h"
+#include "cmsis_wasm_time.h"
 
 typedef struct {
   CMSIS_IMPL_QUEUE	queue;
@@ -18,24 +18,24 @@ static void PosixOsTaskSyncWaitInfoInit(PosixOsTaskWaitInfoType* winfop, uint32_
 
 
 
-static pthread_mutex_t posix_os_mutex;
-static pthread_cond_t posix_os_cond;
+static pthread_mutex_t wasm_mutex;
+static pthread_cond_t wasm_cond;
 
 void PosixOsThreadSyncInit(void)
 {
-  pthread_mutex_init(&posix_os_mutex, NULL);
-  pthread_cond_init(&posix_os_cond, NULL);
+  pthread_mutex_init(&wasm_mutex, NULL);
+  pthread_cond_init(&wasm_cond, NULL);
   return;
 }
 
 void PosixOsThreadSyncLock(void)
 {
-  pthread_mutex_lock(&posix_os_mutex);
+  pthread_mutex_lock(&wasm_mutex);
   return;
 }
 void PosixOsThreadSyncUnlock(void)
 {
-  pthread_mutex_unlock(&posix_os_mutex);
+  pthread_mutex_unlock(&wasm_mutex);
   return;
 }
 
@@ -86,7 +86,7 @@ void* PosixOsThreadSyncWait(PosixOsQueueHeadType* waiting_queue, uint32_t timeou
   }
 
   add_timespec(&tmo, timeout);
-  int err = pthread_cond_timedwait(&wait_info.winfo.cond, &posix_os_mutex, &tmo);
+  int err = pthread_cond_timedwait(&wait_info.winfo.cond, &wasm_mutex, &tmo);
   if (waiting_queue != NULL) {
     PosixOsQueueHeadRemoveEntry(waiting_queue, &wait_info.wait_queue);
   }

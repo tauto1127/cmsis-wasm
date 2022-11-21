@@ -1,7 +1,7 @@
-#ifndef _CMSIS_POSIX_OS_THREAD_SYNC_H_
-#define _CMSIS_POSIX_OS_THREAD_SYNC_H_
+#ifndef _CMSIS_WASM_THREAD_SYNC_H_
+#define _CMSIS_WASM_THREAD_SYNC_H_
 
-#include "cmsis_posix_os_queue.h"
+#include "cmsis_wasm_queue.h"
 
 extern osStatus_t PosixOsThreadSyncSleep(uint32_t timeout);
 
@@ -12,4 +12,4 @@ extern void PosixOsThreadSyncInit(void);
 extern void PosixOsThreadSyncLock(void);
 extern void PosixOsThreadSyncUnlock(void);
 
-#endif /* _CMSIS_POSIX_OS_THREAD_SYNC_H_ */
+#endif /* _CMSIS_WASM_THREAD_SYNC_H_ */

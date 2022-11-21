@@ -1,4 +1,4 @@
-#include "cmsis_posix_os_thread_sync.h"
+#include "cmsis_wasm_thread_sync.h"
 
 osStatus_t osDelay(uint32_t ticks)
 {

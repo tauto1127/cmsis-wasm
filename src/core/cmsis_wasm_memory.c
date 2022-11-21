@@ -1,4 +1,4 @@
-#include "cmsis_posix_os_memory.h"
+#include "cmsis_wasm_memory.h"
 
 void* PosixOsMemoryAlloc(uint32_t size)
 {

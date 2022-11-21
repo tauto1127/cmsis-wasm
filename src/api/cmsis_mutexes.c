@@ -1,6 +1,6 @@
-#include "cmsis_posix_os_memory.h"
+#include "cmsis_wasm_memory.h"
 #include "cmsis_semaphores_private.h"
-#include "cmsis_posix_os_thread_sync.h"
+#include "cmsis_wasm_thread_sync.h"
 
 #define AUTOSAR_OSMUTEX_HEAD_MAGICNO		0xDEADEEEB
 typedef struct {

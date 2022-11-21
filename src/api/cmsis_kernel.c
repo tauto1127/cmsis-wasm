@@ -1,5 +1,5 @@
-#include "cmsis_posix_os_time.h"
-#include "cmsis_posix_os_thread_sync.h"
+#include "cmsis_wasm_time.h"
+#include "cmsis_wasm_thread_sync.h"
 
 osStatus_t osKernelStart(void)
 {

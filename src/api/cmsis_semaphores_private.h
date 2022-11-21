@@ -1,8 +1,8 @@
 #ifndef _CMSIS_SEMAPHORES_PRIVATE_H_
 #define _CMSIS_SEMAPHORES_PRIVATE_H_
 
-#include "cmsis_posix_os_queue.h"
-#define POSIX_OSSEM_HEAD_MAGICNO		0xDEADBEED
+#include "cmsis_wasm_queue.h"
+#define WASM_SEM_HEAD_MAGICNO		0xDEADBEED
 typedef struct {
   uint32_t			max_count;
   uint32_t			count;
