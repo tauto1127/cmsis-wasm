@@ -39,33 +39,37 @@ void WasmThreadSyncUnlock(void)
   return;
 }
 
-static void add_timespec(struct timespec* tmop, uint32_t timeout)
-{
-  uint64_t timeout64 = timeout;
-  clock_gettime(CLOCK_REALTIME, tmop);
-  tmop->tv_nsec += (timeout64 * TIMESPEC_MSEC * TIMESPEC_MSEC);
-  if (tmop->tv_nsec >= TIMESPEC_NANOSEC) {
-    struct timespec over_tmo;
-    over_tmo.tv_sec = (tmop->tv_nsec / TIMESPEC_NANOSEC);
-    over_tmo.tv_nsec = (over_tmo.tv_sec * TIMESPEC_NANOSEC);
-    tmop->tv_sec += over_tmo.tv_sec;
-    tmop->tv_nsec -= over_tmo.tv_nsec;
-  }
-  return;
-}
+/* WAMRのpthread_cond_timedwaitではtimespecの代わりにusecondsを使用する
+   そのため、絶対時間として時間を加算する必要が無い */
+// static void add_timespec(struct timespec* tmop, uint32_t timeout)
+// {
+//   uint64_t timeout64 = timeout;
+//   clock_gettime(CLOCK_REALTIME, tmop);
+//   tmop->tv_nsec += (timeout64 * TIMESPEC_MSEC * TIMESPEC_MSEC);
+//   if (tmop->tv_nsec >= TIMESPEC_NANOSEC) {
+//     struct timespec over_tmo;
+//     over_tmo.tv_sec = (tmop->tv_nsec / TIMESPEC_NANOSEC);
+//     over_tmo.tv_nsec = (over_tmo.tv_sec * TIMESPEC_NANOSEC);
+//     tmop->tv_sec += over_tmo.tv_sec;
+//     tmop->tv_nsec -= over_tmo.tv_nsec;
+//   }
+//   return;
+// }
 
 osStatus_t WasmThreadSyncSleep(uint32_t timeout)
 {
   osStatus_t ret = osOK;
-  struct timespec tmo;
+  // struct timespec tmo;
+  uint32_t useconds;
   pthread_mutex_t mutex;
   pthread_cond_t cond;
   pthread_mutex_init(&mutex, NULL);
   pthread_cond_init(&cond, NULL);
 
   pthread_mutex_lock(&mutex);
-  add_timespec(&tmo, timeout);
-  int err = pthread_cond_timedwait(&cond, &mutex, &tmo);
+  // add_timespec(&tmo, timeout);
+  useconds = timeout * TIMESPEC_MSEC;
+  int err = pthread_cond_timedwait(&cond, &mutex, useconds);
   if (err != ETIMEDOUT) {
     ret = osError;
   }
@@ -76,7 +80,8 @@ osStatus_t WasmThreadSyncSleep(uint32_t timeout)
 void* WasmThreadSyncWait(WasmQueueHeadType* waiting_queue, uint32_t timeout, osStatus_t* ercdp)
 {
   WasmTaskWaitQueueEntryType wait_info;
-  struct timespec tmo;
+  // struct timespec tmo;
+  uint32_t useconds;
 
   wait_info.data = NULL;
   WasmTaskSyncWaitInfoInit(&wait_info.winfo, timeout);
@@ -85,8 +90,9 @@ void* WasmThreadSyncWait(WasmQueueHeadType* waiting_queue, uint32_t timeout, osS
     WasmQueueHeadAddTail(waiting_queue, &wait_info.wait_queue);
   }
 
-  add_timespec(&tmo, timeout);
-  int err = pthread_cond_timedwait(&wait_info.winfo.cond, &wasm_mutex, &tmo);
+  // add_timespec(&tmo, timeout);
+  useconds = timeout * TIMESPEC_MSEC;
+  int err = pthread_cond_timedwait(&wait_info.winfo.cond, &wasm_mutex, useconds);
   if (waiting_queue != NULL) {
     WasmQueueHeadRemoveEntry(waiting_queue, &wait_info.wait_queue);
   }
