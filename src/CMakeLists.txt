@@ -10,12 +10,12 @@ add_library(
 	api/cmsis_mutexes.c
 	api/cmsis_semaphores.c
 	api/cmsis_thread.c
-	core/cmsis_posix_os_memory.c
-	core/cmsis_posix_os_message_queue.c
-	core/cmsis_posix_os_queue.c
-	core/cmsis_posix_os_thread_sync.c
-	core/cmsis_posix_os_time.c
-	core/posix_os.c
+	core/cmsis_wasm_memory.c
+	core/cmsis_wasm_message_queue.c
+	core/cmsis_wasm_queue.c
+	core/cmsis_wasm_thread_sync.c
+	core/cmsis_wasm_time.c
+	core/wasm.c
 )
 
 target_include_directories(

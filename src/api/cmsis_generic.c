@@ -1,4 +1,4 @@
-#include "cmsis_posix_os_thread_sync.h"
+#include "cmsis_wasm_thread_sync.h"
 
 osStatus_t osDelay(uint32_t ticks)
 {
@@ -8,5 +8,5 @@ osStatus_t osDelay(uint32_t ticks)
   if (ticks == 0) {
     return osErrorParameter;
   }
-  return PosixOsThreadSyncSleep(ticks);
+  return WasmThreadSyncSleep(ticks);
 }

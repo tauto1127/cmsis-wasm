@@ -1,6 +1,6 @@
-#include "cmsis_posix_os_memory.h"
+#include "cmsis_wasm_memory.h"
 
-void* PosixOsMemoryAlloc(uint32_t size)
+void* WasmMemoryAlloc(uint32_t size)
 {
   void* addrp = NULL;
 
@@ -11,7 +11,7 @@ void* PosixOsMemoryAlloc(uint32_t size)
   return addrp;
 }
 
-void PosixOsMemoryFree(void* addrp)
+void WasmMemoryFree(void* addrp)
 {
   if (CurrentContextIsISR()) {
     return;

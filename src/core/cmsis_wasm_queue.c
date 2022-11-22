@@ -1,6 +1,6 @@
-#include "cmsis_posix_os_queue.h"
+#include "cmsis_wasm_queue.h"
 
-void PosixOsQueueHeadAddTail(PosixOsQueueHeadType* headp, CMSIS_IMPL_QUEUE* entry)
+void WasmQueueHeadAddTail(WasmQueueHeadType* headp, CMSIS_IMPL_QUEUE* entry)
 {
   cmsis_impl_queue_initialize(entry);
   if (headp->entries == NULL) {
@@ -12,7 +12,7 @@ void PosixOsQueueHeadAddTail(PosixOsQueueHeadType* headp, CMSIS_IMPL_QUEUE* entr
   headp->count++;
   return;
 }
-void PosixOsQueueHeadRemoveEntry(PosixOsQueueHeadType* headp, CMSIS_IMPL_QUEUE* entry)
+void WasmQueueHeadRemoveEntry(WasmQueueHeadType* headp, CMSIS_IMPL_QUEUE* entry)
 {
   if (headp->entries != NULL) {
     CMSIS_IMPL_QUEUE* next = entry->p_next;
@@ -26,11 +26,11 @@ void PosixOsQueueHeadRemoveEntry(PosixOsQueueHeadType* headp, CMSIS_IMPL_QUEUE* 
   }
   return;
 }
-CMSIS_IMPL_QUEUE* PosixOsQueueHeadRemoveFirst(PosixOsQueueHeadType* headp)
+CMSIS_IMPL_QUEUE* WasmQueueHeadRemoveFirst(WasmQueueHeadType* headp)
 {
   CMSIS_IMPL_QUEUE* first = headp->entries;
   if (first != NULL) {
-    PosixOsQueueHeadRemoveEntry(headp, first);
+    WasmQueueHeadRemoveEntry(headp, first);
   }
   return first;
 }

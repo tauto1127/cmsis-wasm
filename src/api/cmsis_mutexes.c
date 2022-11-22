@@ -1,6 +1,6 @@
-#include "cmsis_posix_os_memory.h"
+#include "cmsis_wasm_memory.h"
 #include "cmsis_semaphores_private.h"
-#include "cmsis_posix_os_thread_sync.h"
+#include "cmsis_wasm_thread_sync.h"
 
 #define AUTOSAR_OSMUTEX_HEAD_MAGICNO		0xDEADEEEB
 typedef struct {
@@ -18,14 +18,14 @@ osMutexId_t osMutexNew(const osMutexAttr_t* attr)
   if (CurrentContextIsISR()) {
     return NULL;
   }
-  mutex = (CmsisMutexType*)PosixOsMemoryAlloc(sizeof(CmsisMutexType));
+  mutex = (CmsisMutexType*)WasmMemoryAlloc(sizeof(CmsisMutexType));
   if (mutex == NULL) {
     CMSIS_IMPL_ERROR("ERROR:%s %s() %d cannot allocate memory size=%ld\n", __FILE__, __FUNCTION__, __LINE__, sizeof(CmsisMutexType));
     return NULL;
   }
   mutex->sem = osSemaphoreNew(1, 1, NULL);
   if (mutex->sem == NULL) {
-    PosixOsMemoryFree(mutex);
+    WasmMemoryFree(mutex);
     return NULL;
   }
   mutex->magicno = AUTOSAR_OSMUTEX_HEAD_MAGICNO;
@@ -55,9 +55,9 @@ osStatus_t osMutexAcquire(osMutexId_t mutex_id, uint32_t timeout)
   }
   thread_id = pthread_self();
   mutex = (CmsisMutexType*)mutex_id;
-  PosixOsThreadSyncLock();
+  WasmThreadSyncLock();
   if (mutex->magicno != AUTOSAR_OSMUTEX_HEAD_MAGICNO) {
-    PosixOsThreadSyncUnlock();
+    WasmThreadSyncUnlock();
     CMSIS_IMPL_ERROR("ERROR:%s %s() %d invalid magicno(0x%x)\n", __FILE__, __FUNCTION__, __LINE__, mutex->magicno);
     return osErrorParameter;
   }
@@ -70,7 +70,7 @@ osStatus_t osMutexAcquire(osMutexId_t mutex_id, uint32_t timeout)
       mutex->count = 1;
     }
   }
-  PosixOsThreadSyncUnlock();
+  WasmThreadSyncUnlock();
   return err;
 }
 
@@ -89,9 +89,9 @@ osStatus_t osMutexRelease(osMutexId_t mutex_id)
   }
   thread_id = pthread_self();
   mutex = (CmsisMutexType*)mutex_id;
-  PosixOsThreadSyncLock();
+  WasmThreadSyncLock();
   if (mutex->magicno != AUTOSAR_OSMUTEX_HEAD_MAGICNO) {
-    PosixOsThreadSyncUnlock();
+    WasmThreadSyncUnlock();
     CMSIS_IMPL_ERROR("ERROR:%s %s() %d invalid magicno(0x%x)\n", __FILE__, __FUNCTION__, __LINE__, mutex->magicno);
     return osErrorParameter;
   }
@@ -108,7 +108,7 @@ osStatus_t osMutexRelease(osMutexId_t mutex_id)
   } else {
     err = osErrorResource;
   }
-  PosixOsThreadSyncUnlock();
+  WasmThreadSyncUnlock();
   return err;
 }
 osStatus_t osMutexDelete(osMutexId_t mutex_id)
@@ -122,7 +122,7 @@ osStatus_t osMutexDelete(osMutexId_t mutex_id)
     CMSIS_IMPL_ERROR("ERROR:%s %s() %d invalid mutex_id(NULL)\n", __FILE__, __FUNCTION__, __LINE__);
     return osErrorParameter;
   }
-  PosixOsThreadSyncLock();
+  WasmThreadSyncLock();
   mutex = (CmsisMutexType*)mutex_id;
   if (mutex->magicno != AUTOSAR_OSMUTEX_HEAD_MAGICNO) {
     CMSIS_IMPL_ERROR("ERROR:%s %s() %d invalid magicno(0x%x)\n", __FILE__, __FUNCTION__, __LINE__, mutex->magicno);
@@ -132,11 +132,11 @@ osStatus_t osMutexDelete(osMutexId_t mutex_id)
   } else {
     err = osErrorResource;
   }
-  PosixOsThreadSyncUnlock();
+  WasmThreadSyncUnlock();
 
   if (err == osOK) {
     (void)osSemaphoreDelete(mutex->sem);
-    PosixOsMemoryFree(mutex);
+    WasmMemoryFree(mutex);
   }
   return err;
 }

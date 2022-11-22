@@ -1,16 +1,16 @@
-#include "cmsis_posix_os_memory.h"
+#include "cmsis_wasm_memory.h"
 
 typedef struct {
   osThreadFunc_t func;
   void* argument;
-} PosixOsThreadFuncType;
+} WasmThreadFuncType;
 
-static void* posix_os_thread_func(void* argp)
+static void* wasm_thread_func(void* argp)
 {
-  osThreadFunc_t func = ((PosixOsThreadFuncType*)argp)->func;
-  void* argument = ((PosixOsThreadFuncType*)argp)->argument;
+  osThreadFunc_t func = ((WasmThreadFuncType*)argp)->func;
+  void* argument = ((WasmThreadFuncType*)argp)->argument;
 
-  PosixOsMemoryFree(argp);
+  WasmMemoryFree(argp);
   func(argument);
   return NULL;
 }
@@ -62,12 +62,12 @@ osThreadId_t osThreadNew(osThreadFunc_t	func, void* argument, const osThreadAttr
   int err;
   osThreadId_t ret = (osThreadId_t)NULL;
   pthread_t thread_id;
-  PosixOsThreadFuncType *argp;
+  WasmThreadFuncType *argp;
 
   if (CurrentContextIsISR()) {
     return NULL;
   }
-  argp = (PosixOsThreadFuncType*)PosixOsMemoryAlloc(sizeof(PosixOsThreadFuncType));
+  argp = (WasmThreadFuncType*)WasmMemoryAlloc(sizeof(WasmThreadFuncType));
   if (argp == NULL) {
     return NULL;
   }
@@ -86,7 +86,7 @@ osThreadId_t osThreadNew(osThreadFunc_t	func, void* argument, const osThreadAttr
     return NULL;
   }
 #endif /* CMSIS_PTHREAD_SCHED_REALTIME */
-  err = pthread_create(&thread_id, &pattr, posix_os_thread_func, argp);
+  err = pthread_create(&thread_id, &pattr, wasm_thread_func, argp);
   if (err == 0) {
     ret = (osThreadId_t)thread_id;
   } else {
