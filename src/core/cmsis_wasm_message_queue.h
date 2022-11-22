@@ -26,11 +26,11 @@ typedef struct {
   uint16_t			prealloc_num;
   uint16_t			entry_size;
   uint32_t			magicno;
-  PosixOsQueueHeadType	used;
-  PosixOsQueueHeadType	free;
-  PosixOsQueueHeadType	getter_waiting;
-  PosixOsQueueHeadType	putter_waiting;
-} PosixOsMessageQueueType;
+  WasmQueueHeadType	used;
+  WasmQueueHeadType	free;
+  WasmQueueHeadType	getter_waiting;
+  WasmQueueHeadType	putter_waiting;
+} WasmMessageQueueType;
 
 
 typedef struct {
@@ -43,20 +43,20 @@ typedef struct {
    */
   uint16_t					prio;
   void* data;
-} PosixOsMessageQueueEntryType;
+} WasmMessageQueueEntryType;
 
 
 typedef struct {
   uint16_t 					prealloc_num;
   uint16_t 					entry_size;
-  PosixOsMessageQueueEntryType* control_datap;
+  WasmMessageQueueEntryType* control_datap;
   void* entries_datap;
-} PosixOsMessageQueueConfigType;
-extern PosixOsMessageQueueType* PosixOsMessageQueueCreate(PosixOsMessageQueueConfigType* config);
-extern osStatus_t PosixOsMessageQueueDelete(PosixOsMessageQueueType* qh);
+} WasmMessageQueueConfigType;
+extern WasmMessageQueueType* WasmMessageQueueCreate(WasmMessageQueueConfigType* config);
+extern osStatus_t WasmMessageQueueDelete(WasmMessageQueueType* qh);
 
-extern osStatus_t PosixOsMessageQueueGet(PosixOsMessageQueueType* qh, void* msg_ptr, uint8_t* msg_prio, uint32_t timeout);
-extern osStatus_t PosixOsMessageQueuePut(PosixOsMessageQueueType* qh, const void* msg_ptr, uint8_t msg_prio, uint32_t timeout);
-extern bool_t PosixOsMessageQueueIsValid(PosixOsMessageQueueType* qh);
+extern osStatus_t WasmMessageQueueGet(WasmMessageQueueType* qh, void* msg_ptr, uint8_t* msg_prio, uint32_t timeout);
+extern osStatus_t WasmMessageQueuePut(WasmMessageQueueType* qh, const void* msg_ptr, uint8_t msg_prio, uint32_t timeout);
+extern bool_t WasmMessageQueueIsValid(WasmMessageQueueType* qh);
 
 #endif /* _CMSIS_WASM_MESSAGE_QUEUE_H_ */

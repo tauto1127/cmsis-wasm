@@ -12,7 +12,7 @@ osSemaphoreId_t osSemaphoreNew(uint32_t max_count, uint32_t initial_count, const
     CMSIS_IMPL_ERROR("ERROR:%s %s() %d attr must be null\n", __FILE__, __FUNCTION__, __LINE__);
     return NULL;
   }
-  semp = (CmsisSemType*)PosixOsMemoryAlloc(sizeof(CmsisSemType));
+  semp = (CmsisSemType*)WasmMemoryAlloc(sizeof(CmsisSemType));
   if (semp == NULL) {
     CMSIS_IMPL_ERROR("ERROR:%s %s() %d cannot allocate memory size=%ld\n", __FILE__, __FUNCTION__, __LINE__, sizeof(CmsisSemType));
     return NULL;
@@ -20,7 +20,7 @@ osSemaphoreId_t osSemaphoreNew(uint32_t max_count, uint32_t initial_count, const
   semp->count = initial_count;
   semp->max_count = max_count;
   semp->magicno = WASM_SEM_HEAD_MAGICNO;
-  PosixOsQueueHeadInit(&semp->waiting);
+  WasmQueueHeadInit(&semp->waiting);
   return (osSemaphoreId_t)semp;
 }
 
@@ -35,19 +35,19 @@ osStatus_t osSemaphoreAcquire(osSemaphoreId_t semaphore_id, uint32_t timeout)
     return osErrorParameter;
   }
   semp = (CmsisSemType*)semaphore_id;
-  PosixOsThreadSyncLock();
+  WasmThreadSyncLock();
   if (semp->magicno != WASM_SEM_HEAD_MAGICNO) {
-    PosixOsThreadSyncUnlock();
+    WasmThreadSyncUnlock();
     return osErrorParameter;
   }
   if (is_ctx_isr) {
     if (timeout != 0) {
-      PosixOsThreadSyncUnlock();
+      WasmThreadSyncUnlock();
       return osErrorResource;
     }
   }
   err = osSemaphoreAcquire_nolock(semp, timeout);
-  PosixOsThreadSyncUnlock();
+  WasmThreadSyncUnlock();
   return err;
 }
 
@@ -60,13 +60,13 @@ osStatus_t osSemaphoreRelease(osSemaphoreId_t semaphore_id)
     return osErrorParameter;
   }
   semp = (CmsisSemType*)semaphore_id;
-  PosixOsThreadSyncLock();
+  WasmThreadSyncLock();
   if (semp->magicno != WASM_SEM_HEAD_MAGICNO) {
-    PosixOsThreadSyncUnlock();
+    WasmThreadSyncUnlock();
     return osErrorParameter;
   }
   err = osSemaphoreRelease_nolock(semp);
-  PosixOsThreadSyncUnlock();
+  WasmThreadSyncUnlock();
   return err;
 }
 osStatus_t osSemaphoreDelete(osSemaphoreId_t semaphore_id)
@@ -81,19 +81,19 @@ osStatus_t osSemaphoreDelete(osSemaphoreId_t semaphore_id)
     return osErrorParameter;
   }
   semp = (CmsisSemType*)semaphore_id;
-  PosixOsThreadSyncLock();
+  WasmThreadSyncLock();
   if (semp->magicno != WASM_SEM_HEAD_MAGICNO) {
-    PosixOsThreadSyncUnlock();
+    WasmThreadSyncUnlock();
     CMSIS_IMPL_ERROR("ERROR:%s %s() %d invalid magicno(0x%x)\n", __FILE__, __FUNCTION__, __LINE__, semp->magicno);
     return osErrorParameter;
   }
   if (semp->waiting.count == 0) {
     semp->magicno = 0;
-    PosixOsMemoryFree(semp);
+    WasmMemoryFree(semp);
   } else {
     err = osErrorResource;
   }
-  PosixOsThreadSyncUnlock();
+  WasmThreadSyncUnlock();
   return err;
 }
 
@@ -111,7 +111,7 @@ osStatus_t osSemaphoreAcquire_nolock(CmsisSemType* semp, uint32_t timeout)
       if (timeout == osWaitForever) {
         timeout = WASM_THREAD_SYNC_WAIT_FOREVER;
       }
-      (void)PosixOsThreadSyncWait(&semp->waiting, timeout, &ercd);
+      (void)WasmThreadSyncWait(&semp->waiting, timeout, &ercd);
       if (ercd != osOK) {
         err = osErrorTimeout;
       }
@@ -124,7 +124,7 @@ osStatus_t osSemaphoreRelease_nolock(CmsisSemType* semp)
 {
   osStatus_t err = osOK;
   if (semp->waiting.count > 0) {
-    (void)PosixOsThreadSyncWakeupFirstEntry(&semp->waiting, NULL, osOK);
+    (void)WasmThreadSyncWakeupFirstEntry(&semp->waiting, NULL, osOK);
   } else if (semp->count < semp->max_count) {
     semp->count++;
   } else {
@@ -159,13 +159,13 @@ int32_t osSemaphoreWait(osSemaphoreId semaphore_id, uint32_t millisec)
     return -1;
   }
   semp = (CmsisSemType*)semaphore_id;
-  PosixOsThreadSyncLock();
+  WasmThreadSyncLock();
   if (semp->magicno != WASM_SEM_HEAD_MAGICNO) {
-    PosixOsThreadSyncUnlock();
+    WasmThreadSyncUnlock();
     return -1;
   }
   err = osSemaphoreAcquire_nolock(semp, millisec);
-  PosixOsThreadSyncUnlock();
+  WasmThreadSyncUnlock();
   if (err != osOK) {
     return 0;
   }

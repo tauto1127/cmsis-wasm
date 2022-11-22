@@ -6,34 +6,34 @@ typedef struct {
   uint32_t			timeout;
   osStatus_t			ercd;
   pthread_cond_t      cond;
-} PosixOsTaskWaitInfoType;
+} WasmTaskWaitInfoType;
 
 typedef struct {
   CMSIS_IMPL_QUEUE			wait_queue;
   void* data;
-  PosixOsTaskWaitInfoType		winfo;
-} PosixOsTaskWaitQueueEntryType;
+  WasmTaskWaitInfoType		winfo;
+} WasmTaskWaitQueueEntryType;
 
-static void PosixOsTaskSyncWaitInfoInit(PosixOsTaskWaitInfoType* winfop, uint32_t timeout);
+static void WasmTaskSyncWaitInfoInit(WasmTaskWaitInfoType* winfop, uint32_t timeout);
 
 
 
 static pthread_mutex_t wasm_mutex;
 static pthread_cond_t wasm_cond;
 
-void PosixOsThreadSyncInit(void)
+void WasmThreadSyncInit(void)
 {
   pthread_mutex_init(&wasm_mutex, NULL);
   pthread_cond_init(&wasm_cond, NULL);
   return;
 }
 
-void PosixOsThreadSyncLock(void)
+void WasmThreadSyncLock(void)
 {
   pthread_mutex_lock(&wasm_mutex);
   return;
 }
-void PosixOsThreadSyncUnlock(void)
+void WasmThreadSyncUnlock(void)
 {
   pthread_mutex_unlock(&wasm_mutex);
   return;
@@ -54,7 +54,7 @@ static void add_timespec(struct timespec* tmop, uint32_t timeout)
   return;
 }
 
-osStatus_t PosixOsThreadSyncSleep(uint32_t timeout)
+osStatus_t WasmThreadSyncSleep(uint32_t timeout)
 {
   osStatus_t ret = osOK;
   struct timespec tmo;
@@ -73,22 +73,22 @@ osStatus_t PosixOsThreadSyncSleep(uint32_t timeout)
   return ret;
 }
 
-void* PosixOsThreadSyncWait(PosixOsQueueHeadType* waiting_queue, uint32_t timeout, osStatus_t* ercdp)
+void* WasmThreadSyncWait(WasmQueueHeadType* waiting_queue, uint32_t timeout, osStatus_t* ercdp)
 {
-  PosixOsTaskWaitQueueEntryType wait_info;
+  WasmTaskWaitQueueEntryType wait_info;
   struct timespec tmo;
 
   wait_info.data = NULL;
-  PosixOsTaskSyncWaitInfoInit(&wait_info.winfo, timeout);
+  WasmTaskSyncWaitInfoInit(&wait_info.winfo, timeout);
 
   if (waiting_queue != NULL) {
-    PosixOsQueueHeadAddTail(waiting_queue, &wait_info.wait_queue);
+    WasmQueueHeadAddTail(waiting_queue, &wait_info.wait_queue);
   }
 
   add_timespec(&tmo, timeout);
   int err = pthread_cond_timedwait(&wait_info.winfo.cond, &wasm_mutex, &tmo);
   if (waiting_queue != NULL) {
-    PosixOsQueueHeadRemoveEntry(waiting_queue, &wait_info.wait_queue);
+    WasmQueueHeadRemoveEntry(waiting_queue, &wait_info.wait_queue);
   }
   if (ercdp != NULL) {
     if ((err != 0) && (err != ETIMEDOUT)) {
@@ -101,9 +101,9 @@ void* PosixOsThreadSyncWait(PosixOsQueueHeadType* waiting_queue, uint32_t timeou
   }
   return wait_info.data;
 }
-bool_t PosixOsThreadSyncWakeupFirstEntry(PosixOsQueueHeadType* waiting_queue, void* data, osStatus_t ercd)
+bool_t WasmThreadSyncWakeupFirstEntry(WasmQueueHeadType* waiting_queue, void* data, osStatus_t ercd)
 {
-  PosixOsTaskWaitQueueEntryType *wait_infop = (PosixOsTaskWaitQueueEntryType*)(waiting_queue->entries);
+  WasmTaskWaitQueueEntryType *wait_infop = (WasmTaskWaitQueueEntryType*)(waiting_queue->entries);
   if (wait_infop != NULL) {
     wait_infop->data = data;
     wait_infop->winfo.ercd = ercd;
@@ -115,7 +115,7 @@ bool_t PosixOsThreadSyncWakeupFirstEntry(PosixOsQueueHeadType* waiting_queue, vo
 }
 
 
-static void PosixOsTaskSyncWaitInfoInit(PosixOsTaskWaitInfoType* winfop, uint32_t timeout)
+static void WasmTaskSyncWaitInfoInit(WasmTaskWaitInfoType* winfop, uint32_t timeout)
 {
   winfop->timeout = timeout;
   cmsis_impl_queue_initialize(&winfop->queue);

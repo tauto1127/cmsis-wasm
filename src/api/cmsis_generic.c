@@ -8,5 +8,5 @@ osStatus_t osDelay(uint32_t ticks)
   if (ticks == 0) {
     return osErrorParameter;
   }
-  return PosixOsThreadSyncSleep(ticks);
+  return WasmThreadSyncSleep(ticks);
 }

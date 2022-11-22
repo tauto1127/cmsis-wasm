@@ -7,7 +7,7 @@ typedef struct {
   uint32_t			max_count;
   uint32_t			count;
   uint32_t			magicno;
-  PosixOsQueueHeadType	waiting;
+  WasmQueueHeadType	waiting;
 } CmsisSemType;
 
 extern osStatus_t osSemaphoreAcquire_nolock(CmsisSemType* semp, uint32_t timeout);

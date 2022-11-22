@@ -6,18 +6,18 @@
 typedef struct {
   uint16_t	count;
   CMSIS_IMPL_QUEUE		*entries;
-} PosixOsQueueHeadType;
+} WasmQueueHeadType;
 
-#define PosixOsQueueHeadInitializer(var)	\
-		PosixOsQueueHeadType var = { .count = 0, .entries = NULL }
-#define PosixOsQueueHeadInit(qheadp)	\
+#define WasmQueueHeadInitializer(var)	\
+		WasmQueueHeadType var = { .count = 0, .entries = NULL }
+#define WasmQueueHeadInit(qheadp)	\
 do {	\
 	(qheadp)->count = 0;	\
 	(qheadp)->entries = NULL;	\
 } while (0)
 
-extern void PosixOsQueueHeadAddTail(PosixOsQueueHeadType *headp, CMSIS_IMPL_QUEUE *entry);
-extern CMSIS_IMPL_QUEUE* PosixOsQueueHeadRemoveFirst(PosixOsQueueHeadType *headp);
-extern void PosixOsQueueHeadRemoveEntry(PosixOsQueueHeadType *headp, CMSIS_IMPL_QUEUE *entry);
+extern void WasmQueueHeadAddTail(WasmQueueHeadType *headp, CMSIS_IMPL_QUEUE *entry);
+extern CMSIS_IMPL_QUEUE* WasmQueueHeadRemoveFirst(WasmQueueHeadType *headp);
+extern void WasmQueueHeadRemoveEntry(WasmQueueHeadType *headp, CMSIS_IMPL_QUEUE *entry);
 
 #endif /* _CMSIS_WASM_QUEUE_H_ */

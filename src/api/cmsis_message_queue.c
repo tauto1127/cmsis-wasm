@@ -7,7 +7,7 @@ osMessageQueueId_t osMessageQueueNew(
   const osMessageQueueAttr_t* attr)
 {
   uint32_t aligned_msg_size;
-  PosixOsMessageQueueConfigType config;
+  WasmMessageQueueConfigType config;
 
   if (CurrentContextIsISR()) {
     return NULL;
@@ -27,13 +27,13 @@ osMessageQueueId_t osMessageQueueNew(
   config.control_datap = NULL;
   config.entries_datap = NULL;
 
-  return (osMessageQueueId_t*)PosixOsMessageQueueCreate(&config);
+  return (osMessageQueueId_t*)WasmMessageQueueCreate(&config);
 }
 
 osStatus_t osMessageQueueDelete(osMessageQueueId_t mq_id)
 {
   osStatus_t err = osOK;
-  PosixOsMessageQueueType* qh = (PosixOsMessageQueueType*)mq_id;
+  WasmMessageQueueType* qh = (WasmMessageQueueType*)mq_id;
 
   if (CurrentContextIsISR()) {
     return osErrorISR;
@@ -41,15 +41,15 @@ osStatus_t osMessageQueueDelete(osMessageQueueId_t mq_id)
     CMSIS_IMPL_ERROR("ERROR:%s %s() %d mq_id is invalid value(%p)\n", __FILE__, __FUNCTION__, __LINE__, mq_id);
     return osErrorParameter;
   }
-  PosixOsThreadSyncLock();
-  if (!PosixOsMessageQueueIsValid(qh)) {
+  WasmThreadSyncLock();
+  if (!WasmMessageQueueIsValid(qh)) {
     err = osErrorParameter;
   } else if ((qh->used.count == 0) && (qh->getter_waiting.count == 0) && (qh->putter_waiting.count == 0)) {
-    err = PosixOsMessageQueueDelete((PosixOsMessageQueueType*)mq_id);
+    err = WasmMessageQueueDelete((WasmMessageQueueType*)mq_id);
   } else {
     err = osErrorResource;
   }
-  PosixOsThreadSyncUnlock();
+  WasmThreadSyncUnlock();
   return err;
 }
 
@@ -62,7 +62,7 @@ osStatus_t osMessageQueueGet(
   uint32_t arg_timeout = timeout;
   osStatus_t err = osErrorParameter;
   osStatus_t ercd;
-  PosixOsMessageQueueType* qh = (PosixOsMessageQueueType*)mq_id;
+  WasmMessageQueueType* qh = (WasmMessageQueueType*)mq_id;
   if (CurrentContextIsISR() && (timeout != 0)) {
     return osErrorParameter;
   } else if (qh == NULL) {
@@ -83,7 +83,7 @@ osStatus_t osMessageQueueGet(
     }
     err = osErrorTimeout;
   }
-  ercd = PosixOsMessageQueueGet(qh, msg_ptr, msg_prio, arg_timeout);
+  ercd = WasmMessageQueueGet(qh, msg_ptr, msg_prio, arg_timeout);
   if (ercd == osOK) {
     err = osOK;
   } else if (ercd == osErrorParameter) {
@@ -97,18 +97,18 @@ osStatus_t osMessageQueueGet(
 uint32_t osMessageQueueGetCount(osMessageQueueId_t mq_id)
 {
   uint32_t count = 0;
-  PosixOsMessageQueueType* qh = (PosixOsMessageQueueType*)mq_id;
+  WasmMessageQueueType* qh = (WasmMessageQueueType*)mq_id;
   if (qh == NULL) {
     CMSIS_IMPL_ERROR("ERROR:%s %s() %d mq_id is invalid value(%p)\n", __FILE__, __FUNCTION__, __LINE__, mq_id);
     return 0;
   }
-  PosixOsThreadSyncLock();
-  if (PosixOsMessageQueueIsValid(qh)) {
+  WasmThreadSyncLock();
+  if (WasmMessageQueueIsValid(qh)) {
     count = qh->used.count;
   } else {
     CMSIS_IMPL_ERROR("ERROR:%s %s() %d invalid magicno=%d\n", __FILE__, __FUNCTION__, __LINE__, qh->magicno);
   }
-  PosixOsThreadSyncUnlock();
+  WasmThreadSyncUnlock();
   return count;
 }
 
@@ -121,7 +121,7 @@ osStatus_t osMessageQueuePut(
   uint32_t arg_timeout = timeout;
   osStatus_t err = osErrorParameter;
   osStatus_t ercd;
-  PosixOsMessageQueueType* qh = (PosixOsMessageQueueType*)mq_id;
+  WasmMessageQueueType* qh = (WasmMessageQueueType*)mq_id;
 
   if (CurrentContextIsISR() && (timeout != 0)) {
     return osErrorParameter;
@@ -143,7 +143,7 @@ osStatus_t osMessageQueuePut(
     }
     err = osErrorTimeout;
   }
-  ercd = PosixOsMessageQueuePut(qh, msg_ptr, msg_prio, arg_timeout);
+  ercd = WasmMessageQueuePut(qh, msg_ptr, msg_prio, arg_timeout);
   if (ercd == osOK) {
     err = osOK;
   } else if (ercd == osErrorParameter) {

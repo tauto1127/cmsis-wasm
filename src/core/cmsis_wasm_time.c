@@ -12,7 +12,7 @@ static uint64_t wasm_get_current_time(void)
   return ticks;
 }
 
-osStatus_t PosixOsTimerInit(void)
+osStatus_t WasmTimerInit(void)
 {
   if (wasm_activated_time64 != 0) {
     return osError;
@@ -21,7 +21,7 @@ osStatus_t PosixOsTimerInit(void)
   return osOK;
 }
 
-uint32_t PosixOsTimeGetTickCount(void)
+uint32_t WasmTimeGetTickCount(void)
 {
   uint64_t ctime64 = wasm_get_current_time();
   uint64_t ctime64_relative = ctime64 - wasm_activated_time64;

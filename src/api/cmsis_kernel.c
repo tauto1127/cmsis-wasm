@@ -3,13 +3,13 @@
 
 osStatus_t osKernelStart(void)
 {
-  PosixOsThreadSyncInit();
-  (void)PosixOsTimerInit();
+  WasmThreadSyncInit();
+  (void)WasmTimerInit();
   CMSIS_IMPL_INFO("osKernelStart");
   return osOK;
 }
 
 uint32_t osKernelGetTickCount(void)
 {
-  return PosixOsTimeGetTickCount();
+  return WasmTimeGetTickCount();
 }
