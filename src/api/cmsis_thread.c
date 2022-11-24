@@ -115,7 +115,8 @@ osStatus_t osThreadJoin(osThreadId_t thread_id)
   }
   int ret = pthread_join((pthread_t)thread_id, NULL);
   if (ret != 0) {
-    CMSIS_IMPL_ERROR("ERROR:%s %s() %d pthread_join() error=%d\n", __FILE__, __FUNCTION__, __LINE__, errno);
+    // CMSIS_IMPL_ERROR("ERROR:%s %s() %d pthread_join() error=%d\n", __FILE__, __FUNCTION__, __LINE__, errno);
+    CMSIS_IMPL_ERROR("ERROR:%s %s() %d pthread_join() error=%d\n", __FILE__, __FUNCTION__, __LINE__, ret); // errno in wasi-sysroot is not compatible with WAMR's pthread
     return osErrorResource;
   }
   return osOK;
