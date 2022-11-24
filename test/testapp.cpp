@@ -1,9 +1,9 @@
 #include "cmsis_os.h"
-#include <iostream>
+#include <stdio.h>
 
 int main(int argc, char* argv[])
 {
     uint32_t tick;
     tick = osKernelGetTickCount();
-    std::cout << "tickCount = " << tick << std::endl;
+    printf("tick = %u\n", tick);
 }
