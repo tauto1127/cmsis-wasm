@@ -74,8 +74,8 @@ osThreadId_t osThreadNew(osThreadFunc_t	func, void* argument, const osThreadAttr
   argp->func = func;
   argp->argument = argument;
 
-  pthread_attr_t pattr;
-  err = pthread_attr_init(&pattr);
+  // pthread_attr_t pattr;
+  // err = pthread_attr_init(&pattr);
   if (err != 0) {
     CMSIS_IMPL_ERROR("ERROR:%s %s() %d pthread_attr_init() error=%d\n", __FILE__, __FUNCTION__, __LINE__, err);
     return NULL;
@@ -86,13 +86,14 @@ osThreadId_t osThreadNew(osThreadFunc_t	func, void* argument, const osThreadAttr
     return NULL;
   }
 #endif /* CMSIS_PTHREAD_SCHED_REALTIME */
-  err = pthread_create(&thread_id, &pattr, wasm_thread_func, argp);
+  // err = pthread_create(&thread_id, &pattr, wasm_thread_func, argp);
+  err = pthread_create(&thread_id, NULL, wasm_thread_func, argp); // pthread_attr_t is not supported by WAMR
   if (err == 0) {
     ret = (osThreadId_t)thread_id;
   } else {
     CMSIS_IMPL_ERROR("ERROR:%s %s() %d pthread_create() error=%d\n", __FILE__, __FUNCTION__, __LINE__, err);
   }
-  pthread_attr_destroy(&pattr);
+  // pthread_attr_destroy(&pattr);
   return (osThreadId_t)ret;
 }
 
@@ -114,7 +115,8 @@ osStatus_t osThreadJoin(osThreadId_t thread_id)
   }
   int ret = pthread_join((pthread_t)thread_id, NULL);
   if (ret != 0) {
-    CMSIS_IMPL_ERROR("ERROR:%s %s() %d pthread_join() error=%d\n", __FILE__, __FUNCTION__, __LINE__, errno);
+    // CMSIS_IMPL_ERROR("ERROR:%s %s() %d pthread_join() error=%d\n", __FILE__, __FUNCTION__, __LINE__, errno);
+    CMSIS_IMPL_ERROR("ERROR:%s %s() %d pthread_join() error=%d\n", __FILE__, __FUNCTION__, __LINE__, ret); // errno in wasi-sysroot is not compatible with WAMR's pthread
     return osErrorResource;
   }
   return osOK;
