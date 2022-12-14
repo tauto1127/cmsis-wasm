@@ -1,1 +1,6 @@
+cmake_build/
+public/
+
+Third_Party/FreeRTOS/
+
 .vscode
