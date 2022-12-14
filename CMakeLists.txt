@@ -3,31 +3,19 @@ cmake_minimum_required(VERSION ${MY_CMAKE_VERSION})
 
 project(cmsis-posix-project
     VERSION 1.0.0
-    DESCRIPTION "cmsis-posix"
+    DESCRIPTION "cmsis-wasm"
     LANGUAGES C CXX
 )
-enable_testing()
+
 set(CMAKE_INCLUDE_CURRENT_DIR_IN_INTERFACE ON) 
 
-add_compile_definitions(OS_POSIX)
 set(CMSIS_INTERFACE_DIR "${PROJECT_SOURCE_DIR}/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2")
 set(CMSIS_IMPL_INTERFACE_DIR "${PROJECT_SOURCE_DIR}/src/include")
-
-if (DEFINED CMSIS_POSIX_OPTION_FILEPATH)
-	include(${CMSIS_POSIX_OPTION_FILEPATH})
-else()
-	message(STATUS "CMSIS_POSIX_OPTION_FILEPATH is not defined")
-	include(default-cmake-options.cmake)
-endif()
 
 message(STATUS "BUILD_TYPE " ${BUILD_TYPE})
 message(STATUS "GCOV " ${GCOV})
 
 add_subdirectory(src)
-
-if (test)
-    add_subdirectory(test)
-endif()
 
 set(INSTALL_CMAKE_DIR ${PROJECT_SOURCE_DIR}/public)
 
