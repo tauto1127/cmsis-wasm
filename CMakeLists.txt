@@ -12,6 +12,8 @@ set(CMAKE_INCLUDE_CURRENT_DIR_IN_INTERFACE ON)
 set(CMSIS_INTERFACE_DIR "${PROJECT_SOURCE_DIR}/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2")
 set(CMSIS_IMPL_INTERFACE_DIR "${PROJECT_SOURCE_DIR}/src/include")
 
+include(default-cmake-options.cmake)
+
 message(STATUS "BUILD_TYPE " ${BUILD_TYPE})
 message(STATUS "GCOV " ${GCOV})
 
