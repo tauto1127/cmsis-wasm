@@ -59,7 +59,7 @@ static int set_pthread_schedule_policy(pthread_attr_t* pattr, const osThreadAttr
 
 osThreadId_t osThreadNew(osThreadFunc_t	func, void* argument, const osThreadAttr_t* attr)
 {
-  int err;
+  int err = 0;
   osThreadId_t ret = (osThreadId_t)NULL;
   pthread_t thread_id;
   WasmThreadFuncType *argp;
