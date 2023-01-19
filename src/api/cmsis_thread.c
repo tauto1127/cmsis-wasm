@@ -59,7 +59,7 @@ static int set_pthread_schedule_policy(pthread_attr_t* pattr, const osThreadAttr
 
 osThreadId_t osThreadNew(osThreadFunc_t	func, void* argument, const osThreadAttr_t* attr)
 {
-  int err = 0;
+  int err;
   osThreadId_t ret = (osThreadId_t)NULL;
   pthread_t thread_id;
   WasmThreadFuncType *argp;
@@ -76,10 +76,10 @@ osThreadId_t osThreadNew(osThreadFunc_t	func, void* argument, const osThreadAttr
 
   // pthread_attr_t pattr;
   // err = pthread_attr_init(&pattr);
-  if (err != 0) {
-    CMSIS_IMPL_ERROR("ERROR:%s %s() %d pthread_attr_init() error=%d\n", __FILE__, __FUNCTION__, __LINE__, err);
-    return NULL;
-  }
+  // if (err != 0) {
+  //   CMSIS_IMPL_ERROR("ERROR:%s %s() %d pthread_attr_init() error=%d\n", __FILE__, __FUNCTION__, __LINE__, err);
+  //   return NULL;
+  // }
 #ifdef CMSIS_PTHREAD_SCHED_REALTIME
   if (set_pthread_schedule_policy(&pattr, attr) != 0) {
     pthread_attr_destroy(&pattr);
