@@ -1,0 +1,9 @@
+/home/takuto1127/sora_mros2-wasm/cmsis-wasm/public/include/cmsis_impl_logger.h
+/home/takuto1127/sora_mros2-wasm/cmsis-wasm/public/include/cmsis_impl_types.h
+/home/takuto1127/sora_mros2-wasm/cmsis-wasm/public/include/cmsis_impl_queue.h
+/home/takuto1127/sora_mros2-wasm/cmsis-wasm/public/include/cmsis_impl.h
+/home/takuto1127/sora_mros2-wasm/cmsis-wasm/public/include/cmsis_os2.h
+/home/takuto1127/sora_mros2-wasm/cmsis-wasm/public/include/cmsis_os.h
+/home/takuto1127/sora_mros2-wasm/cmsis-wasm/public/libcmsis.a
+/home/takuto1127/sora_mros2-wasm/cmsis-wasm/public/cmsis-config.cmake
+/home/takuto1127/sora_mros2-wasm/cmsis-wasm/public/cmsis-config-noconfig.cmake
