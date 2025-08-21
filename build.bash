@@ -2,9 +2,9 @@
 
 bash Third_Party/download.bash
 
-mkdir cmake-build
+mkdir build
 
-cd cmake-build
+cd build
 
 cmake -D debug=true -D gcov=true ..
 
